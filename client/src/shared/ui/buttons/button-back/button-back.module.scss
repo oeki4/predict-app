@@ -1,0 +1,28 @@
+.ButtonBack {
+  display: flex;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  align-items: center;
+  transition: $transition;
+  width: min-content;
+  padding-inline: toRem(10px);
+  padding-block: toRem(8px);
+  border-radius: toRem(8px);
+
+  &:hover {
+    background-color: var(--accent);
+  }
+
+  &:active {
+    outline: none;
+    border: none;
+    transform: scale(0.9);
+  }
+}
+
+.ButtonBackIcon {
+  color: var(--text-black);
+  width: toRem(16px);
+  height: toRem(16px);
+}

@@ -1,0 +1,38 @@
+.ContainedIcon {
+  width: toRem(44px);
+  height: toRem(44px);
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &_radius-full {
+    border-radius: 9999px;
+  }
+
+  &_radius-10 {
+    border-radius: toRem(10px);
+  }
+
+  &_gradient-orange {
+    background-image: var(--gradient-orange)
+  }
+
+  &_gradient-blue {
+    background-image: var(--gradient-blue)
+  }
+
+  &_gradient-pink {
+    background-image: var(--gradient-pink)
+  }
+
+  &_gradient-green {
+    background-image: var(--gradient-green)
+  }
+}
+
+.ContainedIconInnerIcon {
+  width: toRem(24px);
+  height: toRem(24px);
+  color: #ffffff;
+}

@@ -1,0 +1,14 @@
+.ToggleThemeButton {
+  width: toRem(44px);
+  height: toRem(44px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ToggleThemeIcon {
+  width: toRem(20px);
+  height: toRem(20px);
+
+  color: #ffea00;
+}

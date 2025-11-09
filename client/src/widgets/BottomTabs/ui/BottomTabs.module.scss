@@ -1,0 +1,64 @@
+.BottomTabs {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  background-color: var(--primary);
+  border-top: 1px solid var(--border);
+  padding-inline: toRem(12px);
+}
+
+.BottomTab {
+  display: flex;
+  flex-direction: column;
+  padding-block: toRem(12px);
+  gap: toRem(4px);
+  align-items: center;
+  text-decoration: none;
+  width: 100%;
+
+  &:hover {
+    .BottomTabIcon {
+      * {
+        stroke: var(--blue);
+      }
+    }
+
+    .BottomTabText {
+      color: var(--blue);
+    }
+  }
+
+  .BottomTabText {
+    color: var(--ring);
+  }
+}
+
+.BottomTabActive {
+  .BottomTabIcon {
+   * {
+      stroke: var(--blue);
+    }
+  }
+
+  .BottomTabText {
+    color: var(--blue);
+  }
+}
+
+.BottomTabIcon {
+  width: toRem(20px);
+  height: toRem(20px);
+  * {
+    transition: $transition;
+    fill: none;
+    stroke: var(--ring);
+  }
+}
+
+.BottomTabText {
+  transition: $transition;
+}
+

@@ -1,0 +1,24 @@
+.Header {
+  background: var(--profile-gradient);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  .HeaderLogo {
+    color: #ffffff;
+  }
+}
+
+.HeaderInner {
+  padding: toRem(10px) toRem(12px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.HeaderButtons {
+  display: flex;
+  gap: toRem(6px);
+}
+

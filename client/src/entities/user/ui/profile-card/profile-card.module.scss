@@ -1,0 +1,21 @@
+.ProfileCard {
+  background: var(--profile-gradient);
+  display: flex;
+  gap: 1rem;
+}
+
+.ProfileCardInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ProfileCardText {
+  color: #ffffff;
+}
+
+.ProfileCardLevelIcon {
+  width: toRem(12px);
+  height: toRem(12px);
+  color: #ffffff;
+}

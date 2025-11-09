@@ -1,0 +1,22 @@
+.Badge {
+  padding: toRem(2px) toRem(8px);
+  display: flex;
+  align-items: center;
+  gap: toRem(4px);
+
+  &_variant-info {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &_variant-blue {
+    background-color: var(--badge-blue);
+  }
+
+  &_radius-8 {
+    border-radius: toRem(8px);
+  }
+
+  &_radius-4 {
+    border-radius: toRem(4px);
+  }
+}

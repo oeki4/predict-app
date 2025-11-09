@@ -1,0 +1,17 @@
+@use 'core' as *;
+
+html {
+  font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background);
+}
+
+.main-section {
+  padding: toRem(72px) toRem(16px) toRem(72px);
+}

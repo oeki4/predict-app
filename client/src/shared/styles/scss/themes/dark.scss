@@ -1,0 +1,50 @@
+html[data-theme='dark'] {
+  --background: #0f172b;
+  --primary: oklch(20.8% 0.042 265.755);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --select: rgba(65, 65, 65, 0.3);
+  --select-menu: rgba(65, 65, 65, 1);;
+
+  --border: oklch(0.269 0 0);
+  --border-green: oklch(79.2% 0.209 151.711);
+  --border-blue: oklch(70.7% 0.165 254.624);
+
+  --ring: oklch(0.600 0 0);
+  --card: oklch(0.145 0 0);
+
+  --blue: oklch(70.7% 0.165 254.624);
+
+  --profile-gradient: linear-gradient(to bottom right, #60a5fa, #06b6d4);
+
+  --gradient-orange: linear-gradient(
+                  to bottom right,
+                  #f59e0b, /* amber-500 */
+                  #ea580c  /* orange-600 */
+  );
+  --gradient-blue: linear-gradient(
+                  to bottom right,
+                  #3b82f6, /* blue-500 */
+                  #0891b2  /* cyan-600 */
+  );
+
+  --gradient-pink: linear-gradient(
+                  to bottom right,
+                  #a855f7, /* purple-500 */
+                  #db2777  /* pink-600 */
+  );
+
+  --gradient-green: linear-gradient(
+                  to bottom right,
+                  #22c55e, /* green-500 */
+                  #059669  /* emerald-600 */
+  );
+
+  // text colors
+  --text-white: oklch(0.145 0 0);
+  --text-black: #ffffff;
+  --text-green: oklch(79.2% 0.209 151.711);
+  --text-blue: oklch(80.9% 0.105 251.813);
+
+  --badge-blue: oklch(28.2% 0.091 267.935);
+}

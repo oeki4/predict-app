@@ -1,0 +1,20 @@
+@use 'sass:math';
+$fs: 16px;
+
+@function getVw($px, $width) {
+  @return math.div($px,  $width) * 1vw;
+}
+
+@function toRem($size) {
+  @return math.div($size, $fs) * 1rem;
+}
+
+html {
+  @media (min-width: 320px) {
+    font-size: getVw($fs, math.div(340px,  100));
+  }
+}
+
+$transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+$transition-duration: 0.5s;
+$transition: $transition-duration $transition-timing-function;

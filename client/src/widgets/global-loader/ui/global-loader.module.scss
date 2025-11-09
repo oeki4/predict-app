@@ -1,0 +1,30 @@
+.GlobalLoader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: $transition opacity;
+  transition-duration: .3s;
+  opacity: 0;
+  pointer-events: none;
+
+  &.active {
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+  &.visible {
+    background-color: var(--background);
+  }
+}
+
+.GlobalLoaderIcon {
+  width: toRem(32px);
+  height: toRem(32px);
+
+  * {
+    fill: var(--blue);
+  }
+}

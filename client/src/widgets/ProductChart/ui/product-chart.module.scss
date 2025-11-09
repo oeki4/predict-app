@@ -1,0 +1,22 @@
+.ProductChartChart {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  height: toRem(200px);
+
+  svg {
+    outline: none;
+  }
+
+  svg:focus {
+    outline: none;
+  }
+}
+
+.ProductChartGrid {
+  stroke: var(--muted-foreground)
+}
+
+.ProductChartGridAxis {
+  stroke: var(--muted-foreground)
+}
