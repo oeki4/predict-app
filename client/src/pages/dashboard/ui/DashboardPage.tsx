@@ -1,27 +1,36 @@
-import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
-import { useLoaderStore } from "@shared/stores";
-import { Text, Button } from "@shared/ui";
+import {Text, Flex, Card, Select} from "@shared/ui";
+import {ProductChart} from "@widgets/ProductChart";
+
+const productSelectOptions = [
+	{
+		value: "1",
+		label: "🥖 Хлеб",
+	},
+	{
+		value: "2",
+		label: "🥚 Яйца",
+	},
+	{
+		value: "3",
+		label: "🚰 Вода",
+	},
+];
 
 export default function DashboardPage() {
-  const { t } = useTranslation();
-  const { showLoader, hideLoader, isLoading } = useLoaderStore();
-  useEffect(() => {
-    console.log(window.Telegram.WebApp.initDataUnsafe);
-  }, []);
 
   return (
-    <div>
-      <Text>{t("testMessage")}</Text>
-      <Text> {window.Telegram.WebApp.initDataUnsafe.user?.first_name}</Text>
+		<Flex direction="column" gap={12}>
+			<Card>
+				<Flex direction={"column"} gap={8}>
+					<Text size={12}>Выберите товар</Text>
+					<Select
+						defaultValue={productSelectOptions[0]}
+						options={productSelectOptions}
+					/>
+				</Flex>
+			</Card>
 
-      <Button />
-
-      {isLoading ? <Text>Loading...</Text> : <Text>Loaded</Text>}
-
-      <button onClick={() => (isLoading ? hideLoader() : showLoader())}>
-        <Text color="white">Toggle is loading</Text>
-      </button>
-    </div>
+			<ProductChart />
+		</Flex>
   );
 }

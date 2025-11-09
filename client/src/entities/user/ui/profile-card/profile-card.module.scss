@@ -7,7 +7,7 @@
 .ProfileCardInfo {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: toRem(12px);
 }
 
 .ProfileCardText {

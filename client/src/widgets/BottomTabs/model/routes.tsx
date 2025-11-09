@@ -1,36 +1,24 @@
 import { paths } from "@shared/config/routes/paths";
-import HomeIcon from "@shared/assets/svg/home.svg?react";
-import GamePadIcon from "@shared/assets/svg/gamepad.svg?react";
-import ShoppingBagIcon from "@shared/assets/svg/shopping-bag.svg?react";
-import FlaskIcon from "@shared/assets/svg/flask.svg?react";
-import CorporationIcon from "@shared/assets/svg/corporation.svg?react";
+import ChartIcon from "@shared/assets/svg/chart.svg?react";
+import HistoryIcon from "@shared/assets/svg/history.svg?react";
+import InformationIcon from "@shared/assets/svg/question.svg?react";
 import UserIcon from "@shared/assets/svg/user.svg?react";
 
 export const bottomTabsRoutes = [
   {
-    name: "Главная",
+    name: "Прогноз",
     path: paths.dashboard,
-    icon: HomeIcon,
+    icon: ChartIcon,
   },
   {
-    name: "Игры",
+    name: "История",
     path: paths.minigames,
-    icon: GamePadIcon,
+    icon: HistoryIcon,
   },
   {
-    name: "Рынок",
-    path: paths.market,
-    icon: ShoppingBagIcon,
-  },
-  {
-    name: "Наука",
-    path: paths.science,
-    icon: FlaskIcon,
-  },
-  {
-    name: "Корп.",
+    name: "Информация",
     path: paths.corporation,
-    icon: CorporationIcon,
+    icon: InformationIcon,
   },
   {
     name: "Профиль",

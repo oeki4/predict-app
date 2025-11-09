@@ -28,7 +28,7 @@ export default function ProductChart() {
           <Text>Динамика цен</Text>
           <Badge>
             <Text color="blue" size={10}>
-              Руда
+              Вода
             </Text>
           </Badge>
         </Flex>

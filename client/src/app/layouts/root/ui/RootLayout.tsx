@@ -1,17 +1,15 @@
 import { Header } from "@widgets/header";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet } from "react-router";
 import { BottomTabs } from "@widgets/BottomTabs";
 import { GlobalLoader } from "@widgets/global-loader";
 import { useLoaderStore } from "@shared/stores";
 import { useEffect } from "react";
 import { useUserStore } from "@entities/user";
 import { clsx } from "clsx";
-import { paths } from "@shared/config/routes/paths";
 
 export default function RootLayout() {
   const { hideLoader, showLoader } = useLoaderStore();
-  const { user, setUser } = useUserStore();
-  const navigate = useNavigate();
+  const {setUser } = useUserStore();
   const {} = useUserStore();
   const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
 
@@ -27,7 +25,6 @@ export default function RootLayout() {
         hasCompany: false,
       });
 
-      if (!user?.hasCompany) navigate(paths["join-game"]);
       hideLoader();
     }, 500);
   }, []);
