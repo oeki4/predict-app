@@ -1,16 +1,19 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
 
-# Подключение к PostgreSQL
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:root@localhost:5432/test_products"
+load_dotenv()
+
+# Подключение к PostgreSQL из переменных окружения
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:root@localhost:5432/test_products")
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-# Функция для получения сессии БД
 def get_db():
     db = SessionLocal()
     try:
