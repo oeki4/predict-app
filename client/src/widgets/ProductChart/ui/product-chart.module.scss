@@ -1,7 +1,13 @@
+.ProductChart {
+  width: 100%;
+  height: toRem(265px);
+}
+
+
 .ProductChartChart {
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible;
   height: toRem(200px);
 
   svg {

@@ -1,0 +1,21 @@
+.CreateForecastButton {
+  width: 100%;
+}
+
+.GraphLoader {
+  width: 100%;
+  height: 265px;
+}
+
+.GraphLoaderText {
+  height: 100%;
+}
+
+.GraphLoaderIcon {
+  width: toRem(48px);
+  height: toRem(48px);
+
+  * {
+    fill: var(--blue);
+  }
+}

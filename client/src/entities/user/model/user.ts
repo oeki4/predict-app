@@ -5,4 +5,5 @@ export interface User {
   level: number;
 
   hasCompany: boolean;
+  initData: string;
 }
