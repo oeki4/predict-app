@@ -11,6 +11,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY server/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Копируем датасет для импорта в БД
+COPY ml ./ml
+
 # Копируем исходный код backend
 COPY server/app ./app
 COPY server/run.py ./run.py
@@ -19,8 +22,8 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-# Запускаем приложение через uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Запускаем приложение: сначала импортируем датасет, затем стартуем uvicorn
+CMD ["sh", "-c", "python -m app.import_dataset && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
 
 
 

@@ -12,15 +12,55 @@ from app.schemas import DataPoint
 
 # ---------- ПУТИ К ФАЙЛАМ ----------
 
-# /PREDICT-APP (корень проекта)
-BASE_DIR = Path(__file__).resolve().parents[2]
+FILE_PATH = Path(__file__).resolve()
 
-# /PREDICT-APP/ml
+# Пытаемся угадать корень проекта в двух сценариях:
+# 1) Локально: <PROJECT_ROOT>/server/app/ml_service.py  -> parents[2] == <PROJECT_ROOT>
+# 2) В Docker: /app/app/ml_service.py                   -> parents[1] == /app
+_base_dir_candidates = []
+try:
+    _base_dir_candidates.append(FILE_PATH.parents[2])
+except IndexError:
+    pass
+try:
+    _base_dir_candidates.append(FILE_PATH.parents[1])
+except IndexError:
+    pass
+
+BASE_DIR = None
+MODEL_PATH = None
+META_PATH = None
+DATA_PATH = None
+
+for base in _base_dir_candidates:
+    ml_dir = base / "ml"
+    model_candidate = ml_dir / "model" / "catboost_sales_model.cbm"
+    meta_candidate = ml_dir / "model" / "catboost_sales_meta.pkl"
+    data_candidate = ml_dir / "dataset.csv"
+
+    # минимальная проверка — наличие файла модели
+    if model_candidate.exists():
+        BASE_DIR = base
+        MODEL_PATH = model_candidate
+        META_PATH = meta_candidate
+        DATA_PATH = data_candidate
+        break
+
+# Если не нашли по факту, просто берём первый кандидат и формируем пути от него
+if BASE_DIR is None:
+    if not _base_dir_candidates:
+        BASE_DIR = FILE_PATH.parents[1]
+    else:
+        BASE_DIR = _base_dir_candidates[0]
+
 ML_DIR = BASE_DIR / "ml"
 
-DATA_PATH = ML_DIR / "dataset.csv"
-MODEL_PATH = ML_DIR / "model" / "catboost_sales_model.cbm"
-META_PATH = ML_DIR / "model" / "catboost_sales_meta.pkl"
+if MODEL_PATH is None:
+    MODEL_PATH = ML_DIR / "model" / "catboost_sales_model.cbm"
+if META_PATH is None:
+    META_PATH = ML_DIR / "model" / "catboost_sales_meta.pkl"
+if DATA_PATH is None:
+    DATA_PATH = ML_DIR / "dataset.csv"
 
 
 # ---------- ФУНКЦИИ ФИЧ ----------
