@@ -28,7 +28,7 @@ export default function DashboardPage() {
           name: string;
           category: string;
         }[]
-      >("/products");
+      >("/products/");
       return res;
     };
 
@@ -52,7 +52,7 @@ export default function DashboardPage() {
     if (!dashboardStore.selectedProduct) return null;
     setForecastResults([]);
     const res = await api.post<Forecast>(
-      "/forecast",
+      "/forecast/",
       {
         product_id: +dashboardStore.selectedProduct.value,
         period_months: +dashboardStore.forecastMonths.value,
