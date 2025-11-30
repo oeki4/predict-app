@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: predict-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: test_products
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: predict-backend
+    working_dir: /app
+    environment:
+      # Здесь можно пробросить переменные окружения для подключения к БД и др.
+      # Например:
+      DATABASE_URL: postgresql://postgres:root@db:5432/test_products
+      HOST: 0.0.0.0
+      PORT: 8000
+      RELOAD: "False"
+    ports:
+      - "8000:8000"
+    # Если нужно подключить локальные .env и т.п., можно раскомментировать:
+    # env_file:
+    #   - server/.env
+
+  frontend:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: predict-frontend
+    working_dir: /app
+    ports:
+      - "5173:80"
+    # Если фронту нужны переменные окружения (VITE_*), можно добавить:
+    # environment:
+    #   VITE_API_URL: "http://localhost:8000"
+
+volumes:
+  db_data:
+
+
+

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import ReactSelect, {
   type Props as ReactSelectProps,
   type StylesConfig,
@@ -67,14 +68,46 @@ export default function Select(props: IProps) {
     options,
     className = "",
     isSearchable = false,
+    value,
+    defaultValue,
+    onChange,
     ...otherProps
   } = props;
+
+  const isControlled = value !== undefined;
+
+  const [internalValue, setInternalValue] = useState<SelectOption | null | undefined>(
+    (defaultValue as SelectOption | null | undefined) ?? null,
+  );
+
+  // Если меняется defaultValue (например, после загрузки options) и Select не контролируемый —
+  // синхронизируем внутреннее значение.
+  useEffect(() => {
+    if (!isControlled) {
+      setInternalValue((defaultValue as SelectOption | null | undefined) ?? null);
+    }
+  }, [defaultValue, isControlled]);
+
+  const handleChange: IProps["onChange"] = (newValue, actionMeta) => {
+    if (!isControlled) {
+      setInternalValue((newValue as SelectOption | null | undefined) ?? null);
+    }
+
+    if (onChange) {
+      onChange(newValue, actionMeta);
+    }
+  };
 
   return (
     <ReactSelect
       className={clsx(styles["Select"], className)}
       options={options}
       styles={stylesConfig}
+      // Превращаем компонент в контролируемый внутри,
+      // чтобы defaultValue корректно отрабатывал при изменении options.
+      value={isControlled ? value : internalValue}
+      defaultValue={undefined}
+      onChange={handleChange}
       components={{
         IndicatorSeparator: () => null,
       }}

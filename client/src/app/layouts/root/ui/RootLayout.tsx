@@ -9,24 +9,22 @@ import { clsx } from "clsx";
 
 export default function RootLayout() {
   const { hideLoader, showLoader } = useLoaderStore();
-  const {setUser } = useUserStore();
-  const {} = useUserStore();
+  const { setUser } = useUserStore();
   const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
 
   useEffect(() => {
     showLoader();
 
-    setTimeout(() => {
-      setUser({
-        avatar: tgUser?.photo_url || "",
-        level: 1,
-        username: tgUser?.username || "",
-        id: 1,
-        hasCompany: false,
-      });
+    setUser({
+      avatar: tgUser?.photo_url || "",
+      level: 1,
+      username: tgUser?.username || "",
+      id: 1,
+      hasCompany: false,
+      initData: window.Telegram.WebApp.initData,
+    });
 
-      hideLoader();
-    }, 500);
+    hideLoader();
   }, []);
   return (
     <>

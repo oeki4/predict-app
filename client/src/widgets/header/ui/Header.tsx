@@ -25,7 +25,7 @@ export default function Header() {
           color="white"
           size={16}
         >
-          ⚡ EcoChain
+          📈 Predict App
         </Text>
         <div className={clsx(styles["HeaderButtons"])}>
           <ToggleLanguage />

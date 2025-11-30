@@ -28,16 +28,17 @@ export default defineConfig({
     },
   },
   server: {
-    port: 443,
+    port: 80,
+    // port: 443,
     host: "0.0.0.0",
     allowedHosts: true,
-    hmr: {
-      host: "tycorn.local",
-      port: 443,
-    },
-    https: {
-      key: fs.readFileSync("../.cert/tycorn-key.pem"),
-      cert: fs.readFileSync("../.cert/tycorn.pem"),
-    },
+    // hmr: {
+    //   host: "tycorn.local",
+    //   port: 443,
+    // },
+    // https: {
+    //   key: fs.readFileSync("../.cert/tycorn-key.pem"),
+    //   cert: fs.readFileSync("../.cert/tycorn.pem"),
+    // },
   },
 });
