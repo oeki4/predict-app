@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float, Date
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database import Base
@@ -36,3 +36,16 @@ class ForecastHistory(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     user = relationship("User", back_populates="forecasts")
+
+class SalesRecord(Base):
+    __tablename__ = "sales_records"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    date = Column(Date, nullable=False)
+    category_id = Column(Integer, nullable=True)
+    product_code = Column(Integer, index=True, nullable=False)
+    city_id = Column(Integer, index=True, nullable=False)
+    customer_group_id = Column(Integer, nullable=True)
+    store_format_id = Column(Integer, nullable=True)
+    sales_kg = Column(Float, nullable=False)

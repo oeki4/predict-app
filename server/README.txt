@@ -3,9 +3,10 @@
 2. venv\Scripts\activate
 3. pip install "fastapi [standart]"
 
-Запуска бэкенда (команды в терминале):
+Запуск бэкенда (команды в терминале):
 1. cd server
-2. python run.py
+2. python -m app.import_dataset
+3. python run.py
 
 Используемая БД: PostreSQL + pgAdmin 4
 Изменить конфигурацию БД: пароль, пользователя и название таблицы можно в файле server/app/database.py (6 строка)
