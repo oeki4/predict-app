@@ -36,8 +36,9 @@ export default function ProductChart(props: IProps) {
             transition={{ duration: 0.4 }}
           >
             <Flex direction="column" gap={12}>
-              <Flex items={"center"} justify={"between"}>
-                <Text>Динамика цен</Text>
+              <Flex items={"start"} gap={12} justify={"between"}>
+                <Text>Количество продаж в кг. по всем городам
+                </Text>
                 <Badge>
                   <Text color="blue" size={10}>
                     {product}
@@ -49,7 +50,7 @@ export default function ProductChart(props: IProps) {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={points}
-                    margin={{ top: 5, right: 20, left: -35, bottom: 5 }}
+                    margin={{ top: 5, right: 20, left: -20, bottom: 5 }}
                   >
                     <CartesianGrid
                       strokeDasharray="3 3"
@@ -63,6 +64,7 @@ export default function ProductChart(props: IProps) {
                       className={styles["ProductChartAxis"]}
                     />
                     <YAxis
+                      width={70}
                       tick={{ fontSize: 11 }}
                       fontFamily={"Montserrat, sans-serif"}
                       className={styles["ProductChartAxis"]}

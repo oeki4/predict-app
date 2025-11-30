@@ -3,6 +3,7 @@
   display: flex;
   align-items: center;
   gap: toRem(4px);
+  text-wrap: nowrap;
 
   &_variant-info {
     background-color: rgba(255, 255, 255, 0.2);
