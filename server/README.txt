@@ -31,8 +31,6 @@
 4. В поле Telegram-Init-Data вставить данные для пользователя, например:
     user={"id":123456,"first_name":"John","username":"john_doe"}
     user={"id":654321,"first_name":"Alice","last_name":"Smith"}
-    user={"id":789012,"first_name":"Иван","last_name":"Петров","username":"ivan_petrov"}
-    user={"id":222333,"first_name":"Maria","last_name":"Garcia","username":"maria_g","language_code":"ru"}
 5. Изменить поля в теле запроса, например на:
     {
         "product_id": 1,

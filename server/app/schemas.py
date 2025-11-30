@@ -25,6 +25,7 @@ class ProductCreate(BaseModel):
 
 class ForecastRequest(BaseModel):
     product_id: int
+    city_id: int
     period_months: int
 
 class DataPoint(BaseModel):
