@@ -18,59 +18,75 @@ def get_forecast(
     db: Session = Depends(get_db),
 ):
     """
-    Создать прогноз спроса для выбранного продукта
+    Создать прогноз спроса для выбранного продукта и города
     на основе обученной CatBoost-модели.
+
+    Параметры в теле запроса (schemas.ForecastRequest):
+      - product_id: int  — ID продукта (должен совпадать с кодом 'Товар' в датасете)
+      - city_id: int     — ID города (совпадает с 'Город' в датасете)
+      - period_months: int — горизонт прогноза в месяцах (1, 3, 6, 12)
     """
 
-    # Получаем продукт
+    # Получаем продукт из БД
     product = crud.get_product(db, request.product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    # Строим реальный ML-прогноз
+    # Строим реальный ML-прогноз (недельные значения)
     try:
         historical_data, forecast_data = get_forecast_for_product(
             product_id=product.id,
+            city_id=request.city_id,
             period_months=request.period_months,
         )
     except ValueError as e:
-        # Например, если нет данных по этому продукту в датасете
+        # Например, если нет данных по такому (product_id, city_id)
         raise HTTPException(status_code=400, detail=str(e))
 
-    # Формируем summary на основе фактических чисел
+    # ---------- Формируем текстовое summary ----------
+
     if historical_data and forecast_data:
-        # Берём последние N месяцев истории (если их меньше — сколько есть)
-        hist_tail = historical_data[-request.period_months :]
-        hist_avg = sum(p.value for p in hist_tail) / len(hist_tail)
-        forecast_avg = sum(p.value for p in forecast_data) / len(forecast_data)
+        # Берём одинаковое кол-во недель в истории и прогнозе
+        window_len = min(len(historical_data), len(forecast_data))
+        hist_tail = historical_data[-window_len:]
+        forecast_tail = forecast_data[-window_len:]
+
+        hist_avg = sum(p.value for p in hist_tail) / window_len
+        forecast_avg = sum(p.value for p in forecast_tail) / window_len
 
         if hist_avg > 0:
             change_pct = (forecast_avg - hist_avg) / hist_avg * 100.0
             direction = "увеличится" if change_pct >= 0 else "уменьшится"
             summary = (
-                f"Ожидается, что спрос на {product.name} {direction} "
-                f"примерно на {abs(change_pct):.1f}% в течение следующих "
+                f"Ожидается, что недельный спрос на {product.name} "
+                f"в городе {request.city_id} {direction} примерно на "
+                f"{abs(change_pct):.1f}% в течение следующих "
                 f"{request.period_months} месяцев."
             )
         else:
             summary = (
-                f"Недостаточно исторических данных для корректного сравнения, "
-                f"отображается прогноз на {request.period_months} месяцев для товара {product.name}."
+                f"Недостаточно исторических данных для корректного сравнения. "
+                f"Отображается прогноз на {request.period_months} месяцев "
+                f"для товара {product.name} в городе {request.city_id}."
             )
     else:
         summary = (
-            f"Недостаточно данных для построения прогноза по продукту {product.name}."
+            f"Недостаточно данных для построения прогноза по продукту "
+            f"{product.name} в городе {request.city_id}."
         )
 
-    # Лог для отладки
+    # ---------- Лог для отладки ----------
+
     print("ДАННЫЕ ДЛЯ СОХРАНЕНИЯ:")
     print(f"  user_id: {user.id} (type: {type(user.id)})")
     print(f"  product_id: {product.id} (type: {type(product.id)})")
+    print(f"  city_id: {request.city_id} (type: {type(request.city_id)})")
     print(f"  product_name: '{product.name}' (type: {type(product.name)})")
     print(f"  period_months: {request.period_months} (type: {type(request.period_months)})")
     print(f"  summary: '{summary}' (type: {type(summary)})")
 
-    # Сохраняем в историю (структура такая же, как была у фейковой версии)
+    # ---------- Сохраняем в историю прогнозов ----------
+
     forecast_history_data = {
         "user_id": user.id,
         "product_id": product.id,
@@ -80,12 +96,15 @@ def get_forecast(
             {
                 "historical": [item.dict() for item in historical_data],
                 "forecast": [item.dict() for item in forecast_data],
+                "city_id": request.city_id,
             },
             ensure_ascii=False,
         ),
         "summary": summary,
     }
     crud.create_forecast_history(db, forecast_history_data)
+
+    # ---------- Возвращаем ответ клиенту ----------
 
     return schemas.ForecastResponse(
         product_name=product.name,

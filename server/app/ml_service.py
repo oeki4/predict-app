@@ -136,20 +136,6 @@ _full_df = _prepare_full_df()
 
 # ---------- ВНУТРЕННИЙ ПРОГНОЗ ПО ДНЯМ ----------
 
-def _choose_city_for_product(product_id: int) -> int:
-    """
-    Выбираем город для продукта: берём тот, где больше всего истории.
-    Предполагаю, что Product.id == значению в колонке 'Товар'.
-    Если это не так — нужно будет сделать маппинг.
-    """
-    subset = _full_df[_full_df["Товар"] == product_id]
-    if subset.empty:
-        raise ValueError("В датасете нет истории для этого product_id")
-
-    city_id = int(subset["Город"].value_counts().idxmax())
-    return city_id
-
-
 def _forecast_daily_for_city_sku(
     city: int,
     sku: int,
@@ -157,7 +143,9 @@ def _forecast_daily_for_city_sku(
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Делает автопрогноз на horizon_days по дням для заданного (город, товар).
-    Возвращает (history_df, future_df).
+    Возвращает:
+      history_df — исторические дневные данные
+      future_df  — будущие дневные точки с колонками Дата, pred, ...
     """
     history = _full_df[(_full_df["Город"] == city) & (_full_df["Товар"] == sku)].copy()
     history = history.sort_values("Дата").reset_index(drop=True)
@@ -225,12 +213,17 @@ def _forecast_daily_for_city_sku(
     return history, future_df
 
 
+# ---------- АГРЕГАЦИЯ ПО МЕСЯЦАМ И НЕДЕЛЯМ ----------
+
 def _aggregate_monthly(df: pd.DataFrame, value_col: str) -> pd.DataFrame:
-    """Сумма по месяцам."""
+    """
+    Агрегируем данные по месяцам: сумма value_col за каждый календарный месяц.
+    """
     if df.empty:
         return df.copy()
 
     tmp = df.copy()
+    # начало месяца
     tmp["month_start"] = tmp["Дата"].values.astype("datetime64[M]")
     monthly = (
         tmp.groupby("month_start")[value_col]
@@ -238,61 +231,91 @@ def _aggregate_monthly(df: pd.DataFrame, value_col: str) -> pd.DataFrame:
         .reset_index()
         .rename(columns={"month_start": "Дата"})
     )
-    return monthly
+    return monthly[["Дата", value_col]]
+
+
+def _aggregate_weekly(df: pd.DataFrame, value_col: str) -> pd.DataFrame:
+    """
+    Агрегируем данные по неделям блоками по 7 дней подряд,
+    начиная с минимальной даты в df.
+    """
+    if df.empty:
+        return df.copy()
+
+    tmp = df.sort_values("Дата").copy()
+    start = tmp["Дата"].iloc[0].normalize()  # обнуляем время
+
+    tmp["week_idx"] = ((tmp["Дата"] - start).dt.days // 7).astype(int)
+
+    weekly = (
+        tmp.groupby("week_idx")[value_col]
+        .sum()
+        .reset_index()
+    )
+    weekly["Дата"] = start + pd.to_timedelta(weekly["week_idx"] * 7, unit="D")
+
+    return weekly[["Дата", value_col]]
 
 
 # ---------- ПУБЛИЧНАЯ ФУНКЦИЯ ДЛЯ РОУТЕРА ----------
 
 def get_forecast_for_product(
     product_id: int,
+    city_id: int,
     period_months: int,
     history_months: int = 6,
 ) -> Tuple[List[DataPoint], List[DataPoint]]:
     """
     Возвращает:
-      - historical_data: список DataPoint по месяцам (история)
-      - forecast_data:   список DataPoint по месяцам (прогноз)
+      - historical_data: список DataPoint по МЕСЯЦАМ (история)
+      - forecast_data:   список DataPoint по НЕДЕЛЯМ (прогноз)
+
+    Для конкретного товара (product_id) и города (city_id).
+
+    Прогноз:
+      period_months = 1  ->  4 недели
+      period_months = 3  -> 12 недель
+      period_months = 6  -> 24 недели
+      period_months = 12 -> 48 недель
     """
     if period_months <= 0:
         raise ValueError("period_months должен быть > 0")
 
-    city_id = _choose_city_for_product(product_id)
+    horizon_weeks = period_months * 4
+    horizon_days = horizon_weeks * 7
 
-    horizon_days = int(period_months * 30)
+    # Дневной прогноз
     history_df, future_df = _forecast_daily_for_city_sku(
         city=city_id,
         sku=product_id,
         horizon_days=horizon_days,
     )
 
-    # История за последние history_months
-    history_df = history_df.sort_values("Дата")
-    historical_points: List[DataPoint] = []
+    # --------- История: по МЕСЯЦАМ ---------
+    monthly_history = _aggregate_monthly(history_df, "sales_kg")
 
-    if not history_df.empty:
-        max_date = history_df["Дата"].max()
-        min_date = max_date - pd.DateOffset(months=history_months)
-        history_tail = history_df[history_df["Дата"] >= min_date]
-        history_monthly = _aggregate_monthly(history_tail, "sales_kg")
+    # Берём последние history_months месяцев (если их больше)
+    if len(monthly_history) > history_months:
+        monthly_history = monthly_history.iloc[-history_months:]
 
-        historical_points = [
-            DataPoint(
-                date=row["Дата"].strftime("%Y-%m-%d"),
-                value=float(row["sales_kg"]),
-            )
-            for _, row in history_monthly.iterrows()
-        ]
+    historical_points: List[DataPoint] = [
+        DataPoint(
+            date=row["Дата"].strftime("%Y-%m-%d"),
+            value=float(row["sales_kg"]),
+        )
+        for _, row in monthly_history.iterrows()
+    ]
 
-    # Прогноз по месяцам
-    future_monthly = _aggregate_monthly(future_df, "pred")
-    future_monthly = future_monthly.sort_values("Дата").head(period_months)
+    # --------- Прогноз: по НЕДЕЛЯМ ---------
+    weekly_future = _aggregate_weekly(future_df, "pred")
+    weekly_future = weekly_future.sort_values("Дата").iloc[:horizon_weeks]
 
-    forecast_points = [
+    forecast_points: List[DataPoint] = [
         DataPoint(
             date=row["Дата"].strftime("%Y-%m-%d"),
             value=float(row["pred"]),
         )
-        for _, row in future_monthly.iterrows()
+        for _, row in weekly_future.iterrows()
     ]
 
     return historical_points, forecast_points
