@@ -23,6 +23,13 @@ class ProductCreate(BaseModel):
     name: str
     category: Optional[str] = None
 
+class CityBase(BaseModel):
+    id: int
+    name: str
+
+class CityCreate(BaseModel):
+    name: str
+
 class ForecastRequest(BaseModel):
     product_id: int
     city_id: int

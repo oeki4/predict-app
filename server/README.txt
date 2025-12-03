@@ -6,7 +6,8 @@
 Запуск бэкенда (команды в терминале):
 1. cd server
 2. python -m app.import_dataset
-3. python run.py
+3. python -m app.import_cities
+4. python run.py
 
 Используемая БД: PostreSQL + pgAdmin 4
 Изменить конфигурацию БД: пароль, пользователя и название таблицы можно в файле server/app/database.py (6 строка)

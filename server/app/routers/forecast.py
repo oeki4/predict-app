@@ -17,15 +17,6 @@ def get_forecast(
     user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Создать прогноз спроса для выбранного продукта и города
-    на основе обученной CatBoost-модели.
-
-    Параметры в теле запроса (schemas.ForecastRequest):
-      - product_id: int  — ID продукта (должен совпадать с кодом 'Товар' в датасете)
-      - city_id: int     — ID города (совпадает с 'Город' в датасете)
-      - period_months: int — горизонт прогноза в месяцах (1, 3, 6, 12)
-    """
 
     # Получаем продукт из БД
     product = crud.get_product(db, request.product_id)
