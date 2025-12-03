@@ -23,6 +23,13 @@ class Product(Base):
     category = Column(String(100), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+class City(Base):
+    __tablename__ = "cities"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
 class ForecastHistory(Base):
     __tablename__ = "forecast_history"
     

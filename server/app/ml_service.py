@@ -108,8 +108,10 @@ def _prepare_full_df() -> pd.DataFrame:
 
     df["sales_kg"] = df["sales_kg"].clip(lower=0)
 
+    # сортировка
     df = df.sort_values(["Город", "Товар", "Дата"])
 
+    # календарные признаки
     df["dayofweek"] = df["Дата"].dt.weekday
     df["is_weekend"] = df["dayofweek"].isin([5, 6]).astype(int)
     df["day"] = df["Дата"].dt.day
@@ -117,7 +119,25 @@ def _prepare_full_df() -> pd.DataFrame:
     df["year"] = df["Дата"].dt.year
     df["weekofyear"] = df["Дата"].dt.isocalendar().week.astype(int)
 
-    df = df.groupby(["Город", "Товар"], group_keys=False).apply(add_lags)
+    group_cols = ["Город", "Товар"]
+
+    # ----- лаги -----
+    for lag in [1, 2, 3, 4, 5, 6, 7, 14, 28]:
+        df[f"lag_{lag}"] = (
+            df.groupby(group_cols)["sales_kg"]
+              .shift(lag)
+        )
+
+    # ----- скользящие средние -----
+    for window in [7, 14, 30, 60]:
+        df[f"rolling_{window}_mean"] = (
+            df.groupby(group_cols)["sales_kg"]
+              .shift(1)                    # как в add_lags: rolling по прошлым дням
+              .rolling(window)
+              .mean()
+        )
+
+    # убираем первые строки, где лаги/роллинги не посчитались
     df = df.dropna().reset_index(drop=True)
 
     return df

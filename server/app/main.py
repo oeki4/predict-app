@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.routers import users, products, forecast, cities
 from app.database import engine
 from app import models
 from app.routers import users, products, forecast
@@ -28,6 +28,7 @@ app.add_middleware(
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(products.router, prefix="/api/v1")
 app.include_router(forecast.router, prefix="/api/v1")
+app.include_router(cities.router, prefix="/api/v1")
 
 
 @app.get("/")
