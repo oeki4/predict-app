@@ -21,10 +21,11 @@ interface IProps {
   points: Point[];
   product: string;
   isLoading: boolean;
+  title: string;
 }
 
 export default function ProductChart(props: IProps) {
-  const { points, product, isLoading } = props;
+  const { points, product, isLoading, title } = props;
   return (
     <Card className={styles["ProductChart"]}>
       <AnimatePresence>
@@ -37,7 +38,7 @@ export default function ProductChart(props: IProps) {
           >
             <Flex direction="column" gap={12}>
               <Flex items={"start"} gap={12} justify={"between"}>
-                <Text>Количество продаж в кг. по всем городам
+                <Text>{title}
                 </Text>
                 <Badge>
                   <Text color="blue" size={10}>

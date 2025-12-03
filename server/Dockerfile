@@ -22,8 +22,5 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-# Запускаем приложение: сначала импортируем датасет, затем стартуем uvicorn
-CMD ["sh", "-c", "python -m app.import_dataset && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
-
-
-
+# Запускаем приложение: сначала импортируем датасет, затем города, затем стартуем uvicorn
+CMD ["sh", "-c", "python -m app.import_dataset && python -m app.import_cities && uvicorn app.main:app --host 0.0.0.0 --port 8000"]

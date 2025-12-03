@@ -28,6 +28,7 @@ export default function MinigamesPage() {
 
       setTimeout(() => {
         getJson().then((res) => {
+          console.log(res);
           setForecastResults(res);
           hideLoader();
         });
@@ -42,6 +43,11 @@ export default function MinigamesPage() {
         <Card>
           <Flex direction="column" gap={16}>
             <Text size={18}>Номер прогноза: {forecastResult.id}</Text>
+            <Flex direction="column" gap={8}>
+              <Text size={12}>Продукт: {forecastResult.product_name}</Text>
+              <Text size={12}>Количество месяцев: {forecastResult.period_months}</Text>
+              <Text size={12}>Краткий прогноз: {forecastResult.summary}</Text>
+            </Flex>
             <Flex justify={"end"}>
               <Text size={12}>
                 Дата:{" "}
@@ -51,6 +57,7 @@ export default function MinigamesPage() {
                   .toFormat("dd.MM.yyyy HH:mm")}
               </Text>
             </Flex>
+         
           </Flex>
         </Card>
       ))}

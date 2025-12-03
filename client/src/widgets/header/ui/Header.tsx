@@ -28,7 +28,7 @@ export default function Header() {
           📈 Predict App
         </Text>
         <div className={clsx(styles["HeaderButtons"])}>
-          <ToggleLanguage />
+          {/* <ToggleLanguage /> */}
           <ToggleTheme />
         </div>
       </div>

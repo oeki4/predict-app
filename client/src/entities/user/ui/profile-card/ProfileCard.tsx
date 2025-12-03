@@ -5,10 +5,11 @@ import { clsx } from "clsx";
 
 interface IProps {
   user: User;
+  generatedForecasts: number;
 }
 
 export default function ProfileCard(props: IProps) {
-  const { user } = props;
+  const { user, generatedForecasts } = props;
   return (
     <Card className={styles["ProfileCard"]}>
       <Avatar url={user.avatar} />
@@ -17,7 +18,7 @@ export default function ProfileCard(props: IProps) {
           {user.username}
         </Text>
         <Text className={styles["ProfileCardText"]} weight={500} size={12}>
-          ID: {user.id}
+          Количество сгенерированных прогнозов: {generatedForecasts}
         </Text>
       </div>
     </Card>

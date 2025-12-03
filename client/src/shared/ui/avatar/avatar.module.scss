@@ -4,6 +4,7 @@
   border-style: solid;
   overflow: hidden;
   border-color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
 
   &-size-72 {
     width: toRem(72px);
