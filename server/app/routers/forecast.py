@@ -17,14 +17,25 @@ def get_forecast(
     user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    """
+    Создать прогноз спроса для выбранного продукта и города
+    на основе обученной CatBoost-модели.
+
+    Тело запроса (schemas.ForecastRequest):
+      - product_id: int  — ID продукта (совпадает с кодом 'Товар' в датасете)
+      - city_id: int     — ID города (совпадает с 'Город' в датасете)
+      - period_months: int — горизонт прогноза в месяцах (1, 3, 6, 12)
+    """
 
     # Получаем продукт из БД
     product = crud.get_product(db, request.product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    # Строим реальный ML-прогноз (недельные значения)
+    # Строим реальный ML-прогноз
     try:
+        # historical_data — помесячно (history_months месяцев)
+        # forecast_data   — по неделям (4 * period_months недель)
         historical_data, forecast_data = get_forecast_for_product(
             product_id=product.id,
             city_id=request.city_id,
@@ -37,19 +48,29 @@ def get_forecast(
     # ---------- Формируем текстовое summary ----------
 
     if historical_data and forecast_data:
-        # Берём одинаковое кол-во недель в истории и прогнозе
-        window_len = min(len(historical_data), len(forecast_data))
-        hist_tail = historical_data[-window_len:]
-        forecast_tail = forecast_data[-window_len:]
+        # История: берём последние period_months месяцев, либо сколько есть
+        if len(historical_data) >= request.period_months:
+            hist_tail = historical_data[-request.period_months :]
+        else:
+            hist_tail = historical_data
 
-        hist_avg = sum(p.value for p in hist_tail) / window_len
-        forecast_avg = sum(p.value for p in forecast_tail) / window_len
+        hist_months = len(hist_tail)
+        hist_total = sum(p.value for p in hist_tail)
+        hist_avg_per_month = hist_total / hist_months if hist_months > 0 else 0.0
 
-        if hist_avg > 0:
-            change_pct = (forecast_avg - hist_avg) / hist_avg * 100.0
+        # Прогноз: все недельные точки соответствуют period_months месяцам
+        forecast_total = sum(p.value for p in forecast_data)
+        forecast_avg_per_month = forecast_total / request.period_months
+
+        if hist_avg_per_month > 0:
+            change_pct = (
+                (forecast_avg_per_month - hist_avg_per_month)
+                / hist_avg_per_month
+                * 100.0
+            )
             direction = "увеличится" if change_pct >= 0 else "уменьшится"
             summary = (
-                f"Ожидается, что недельный спрос на {product.name} "
+                f"Ожидается, что спрос на {product.name} "
                 f"в городе {request.city_id} {direction} примерно на "
                 f"{abs(change_pct):.1f}% в течение следующих "
                 f"{request.period_months} месяцев."
